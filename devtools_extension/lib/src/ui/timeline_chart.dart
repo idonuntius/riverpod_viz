@@ -352,41 +352,39 @@ class _BarsPainter extends CustomPainter {
 
   void _drawTimeAxis(
       Canvas canvas, Size size, int startTime, int durationMs) {
-    final textStyle = TextStyle(color: Colors.grey[600], fontSize: 10);
-    final linePaint = Paint()
+    final labelStyle = TextStyle(color: Colors.grey[600], fontSize: 10);
+    final majorLinePaint = Paint()
       ..color = Colors.grey[400]!
       ..strokeWidth = 0.5;
+    final minorLinePaint = Paint()
+      ..color = Colors.grey[300]!
+      ..strokeWidth = 0.5;
+    final tickHeight = size.height - 20;
 
-    // Determine tick interval.
     final durationSec = durationMs / 1000.0;
-    double tickInterval;
-    if (durationSec <= 10) {
-      tickInterval = 1;
-    } else if (durationSec <= 60) {
-      tickInterval = 5;
-    } else if (durationSec <= 300) {
-      tickInterval = 30;
-    } else {
-      tickInterval = 60;
-    }
-
     final maxSec = durationSec + 2;
-    for (double sec = 0; sec <= maxSec; sec += tickInterval) {
+
+    // Minor ticks every 1s, major ticks with label every 5s.
+    for (var sec = 0; sec <= maxSec; sec++) {
       final x = _leftMargin + sec * _pxPerSecond;
       if (x > size.width) break;
 
+      final isMajor = sec % 5 == 0;
+
       canvas.drawLine(
         Offset(x, 0),
-        Offset(x, size.height - 20),
-        linePaint,
+        Offset(x, tickHeight),
+        isMajor ? majorLinePaint : minorLinePaint,
       );
 
-      final label = '${sec.toStringAsFixed(sec == sec.roundToDouble() ? 0 : 1)}s';
-      final tp = TextPainter(
-        text: TextSpan(text: label, style: textStyle),
-        textDirection: TextDirection.ltr,
-      )..layout();
-      tp.paint(canvas, Offset(x - tp.width / 2, size.height - 18));
+      if (isMajor) {
+        final label = '${sec}s';
+        final tp = TextPainter(
+          text: TextSpan(text: label, style: labelStyle),
+          textDirection: TextDirection.ltr,
+        )..layout();
+        tp.paint(canvas, Offset(x - tp.width / 2, tickHeight + 4));
+      }
     }
   }
 
