@@ -6,7 +6,11 @@ import 'event_type.dart';
 
 /// A [ProviderObserver] that posts lifecycle events via
 /// `dart:developer.postEvent` for the riverpod_viz DevTools extension.
+///
+/// Add an instance to your `ProviderScope.observers` to make provider
+/// add / update / dispose / error events visible in the DevTools timeline.
 base class RiverpodVizObserver extends ProviderObserver {
+  /// Posts a [ProviderEventType.add] event when a provider is created.
   @override
   void didAddProvider(
     ProviderObserverContext context,
@@ -15,6 +19,7 @@ base class RiverpodVizObserver extends ProviderObserver {
     _post(ProviderEventType.add, context);
   }
 
+  /// Posts a [ProviderEventType.update] event when a provider's value changes.
   @override
   void didUpdateProvider(
     ProviderObserverContext context,
@@ -24,11 +29,13 @@ base class RiverpodVizObserver extends ProviderObserver {
     _post(ProviderEventType.update, context);
   }
 
+  /// Posts a [ProviderEventType.dispose] event when a provider is disposed.
   @override
   void didDisposeProvider(ProviderObserverContext context) {
     _post(ProviderEventType.dispose, context);
   }
 
+  /// Posts a [ProviderEventType.error] event when a provider throws.
   @override
   void providerDidFail(
     ProviderObserverContext context,

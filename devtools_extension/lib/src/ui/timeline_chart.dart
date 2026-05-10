@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../controller/event_controller.dart';
 import '../model/provider_event.dart';
+import '../model/provider_event_type.dart';
 import '../util/merge_rebuild_cycles.dart';
 
 const double _rowHeight = 28.0;
@@ -15,14 +16,22 @@ const double _labelWidth = 160.0;
 const Color _barColor1 = Color(0xFF4078C0);
 const Color _barColor2 = Color(0xFF2E9E6E);
 
+/// A Gantt-chart-style widget that renders provider lifecycles as horizontal
+/// bars on a time axis, with hover tooltips for individual events.
 class TimelineChart extends StatefulWidget {
+  /// Creates a chart bound to [controller] for data and [scrollController]
+  /// for horizontal scrolling.
   const TimelineChart({
     super.key,
     required this.controller,
     required this.scrollController,
   });
 
+  /// Source of provider events and derived views.
   final EventController controller;
+
+  /// Controls horizontal scrolling of the bars area; also used to detect
+  /// whether the user is at the right edge for auto-follow behavior.
   final ScrollController scrollController;
 
   @override
@@ -168,10 +177,10 @@ class _TimelineChartState extends State<TimelineChart> {
     final eventsInSegments = <ProviderEvent>[];
     bool inSegment = false;
     for (final event in merged) {
-      if (event.type == 'add') {
+      if (event.type == ProviderEventType.add) {
         inSegment = true;
         eventsInSegments.add(event);
-      } else if (event.type == 'dispose') {
+      } else if (event.type == ProviderEventType.dispose) {
         if (inSegment) eventsInSegments.add(event);
         inSegment = false;
       } else {
@@ -205,7 +214,7 @@ class _TimelineChartState extends State<TimelineChart> {
     final hit = _hitEvent!;
     final event = hit.event;
     final dt = DateTime.fromMillisecondsSinceEpoch(event.timestamp);
-    final typeLabel = '[${event.type.toUpperCase()}]';
+    final typeLabel = '[${event.type.wireValue.toUpperCase()}]';
     final dateStr =
         '${dt.year}-${_pad(dt.month)}-${_pad(dt.day)} ${_pad(dt.hour)}:${_pad(dt.minute)}:${_pad(dt.second)}.${_pad3(dt.millisecond)}';
 
@@ -293,10 +302,10 @@ class _BarsPainter extends CustomPainter {
       final eventsInSegments = <ProviderEvent>[];
       int? segStart;
       for (final event in merged) {
-        if (event.type == 'add') {
+        if (event.type == ProviderEventType.add) {
           segStart = event.timestamp;
           eventsInSegments.add(event);
-        } else if (event.type == 'dispose') {
+        } else if (event.type == ProviderEventType.dispose) {
           if (segStart != null) {
             segments.add((segStart, event.timestamp));
             eventsInSegments.add(event);

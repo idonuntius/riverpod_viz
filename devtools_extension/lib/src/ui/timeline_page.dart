@@ -3,7 +3,10 @@ import 'package:flutter/material.dart';
 import '../controller/event_controller.dart';
 import 'timeline_chart.dart';
 
+/// The top-level page shown in the DevTools tab: a toolbar, the Gantt chart,
+/// and a status bar.
 class TimelinePage extends StatefulWidget {
+  /// Creates the timeline page.
   const TimelinePage({super.key});
 
   @override
