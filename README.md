@@ -14,7 +14,8 @@ A [DevTools extension](https://docs.flutter.dev/tools/devtools/extensions) that 
 
 ## Screenshot
 
-<!-- TODO: Add screenshot -->
+<img width=800 src="./screenshot.png">
+
 
 ## Getting Started
 
