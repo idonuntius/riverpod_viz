@@ -1,0 +1,22 @@
+name: riverpod_viz
+description: A DevTools extension that visualizes Riverpod provider lifecycles as a Gantt-chart-style timeline.
+version: 0.1.0
+homepage: https://github.com/idonuntius/riverpod_viz
+repository: https://github.com/idonuntius/riverpod_viz
+issue_tracker: https://github.com/idonuntius/riverpod_viz/issues
+
+environment:
+  sdk: ^3.11.5
+  flutter: ">=1.17.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_riverpod: ^3.3.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
