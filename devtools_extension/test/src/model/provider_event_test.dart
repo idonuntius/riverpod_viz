@@ -1,9 +1,11 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:riverpod_viz_devtools_extension/src/model/provider_event.dart';
+import 'package:riverpod_viz_devtools_extension/src/model/provider_event_type.dart';
 
 void main() {
   group('ProviderEvent', () {
-    test('fromJsonに有効なJSONを渡す - 正しいフィールドでインスタンスが生成される', () {
+    test('fromJson with valid JSON - creates instance with correct fields',
+        () {
       final json = <String, Object?>{
         'type': 'add',
         'provider_id': 'counter',
@@ -12,14 +14,24 @@ void main() {
 
       final event = ProviderEvent.fromJson(json);
 
-      expect(event.type, 'add');
+      expect(event.type, ProviderEventType.add);
       expect(event.providerId, 'counter');
       expect(event.timestamp, 1000);
     });
 
-    test('toJsonを呼ぶ - fromJsonで復元可能なMapが返る', () {
+    test('fromJson with unknown type - throws ArgumentError', () {
+      final json = <String, Object?>{
+        'type': 'unknown',
+        'provider_id': 'counter',
+        'timestamp': 1000,
+      };
+
+      expect(() => ProviderEvent.fromJson(json), throwsArgumentError);
+    });
+
+    test('toJson - returns a Map round-trippable via fromJson', () {
       const event = ProviderEvent(
-        type: 'update',
+        type: ProviderEventType.update,
         providerId: 'greeting',
         timestamp: 2000,
       );
@@ -31,9 +43,10 @@ void main() {
       expect(json['timestamp'], 2000);
     });
 
-    test('toJsonの結果をfromJsonに渡す - 同じ値のインスタンスが復元される', () {
+    test('round-trip toJson and fromJson - restores the same field values',
+        () {
       const original = ProviderEvent(
-        type: 'dispose',
+        type: ProviderEventType.dispose,
         providerId: 'userProfile(42)',
         timestamp: 3000,
       );
@@ -45,9 +58,9 @@ void main() {
       expect(restored.timestamp, original.timestamp);
     });
 
-    test('toStringを呼ぶ - type, providerId, timestampが含まれる', () {
+    test('toString - includes type, providerId, and timestamp', () {
       const event = ProviderEvent(
-        type: 'error',
+        type: ProviderEventType.error,
         providerId: 'asyncData',
         timestamp: 5000,
       );

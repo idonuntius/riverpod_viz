@@ -3,7 +3,7 @@ import 'package:riverpod_viz/riverpod_viz.dart';
 
 void main() {
   group('RiverpodVizObserver', () {
-    test('インスタンス化 - ProviderObserverとして生成される', () {
+    test('instantiation - creates an instance of RiverpodVizObserver', () {
       final observer = RiverpodVizObserver();
       expect(observer, isA<RiverpodVizObserver>());
     });

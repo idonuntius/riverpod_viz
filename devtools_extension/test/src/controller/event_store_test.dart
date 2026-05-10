@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:riverpod_viz_devtools_extension/src/controller/event_store.dart';
 import 'package:riverpod_viz_devtools_extension/src/model/provider_event.dart';
+import 'package:riverpod_viz_devtools_extension/src/model/provider_event_type.dart';
 
 void main() {
   late EventStore store;
@@ -14,11 +15,11 @@ void main() {
   });
 
   group('eventsByProvider', () {
-    test('イベントが空 - 空のMapが返る', () {
+    test('no events - returns an empty Map', () {
       expect(store.eventsByProvider, isEmpty);
     });
 
-    test('同じProviderの複数イベント - 1つのキーにグループ化される', () {
+    test('multiple events for the same provider - grouped under one key', () {
       store
         ..addEvent(_event('add', 'counter', 1000))
         ..addEvent(_event('update', 'counter', 2000))
@@ -30,7 +31,7 @@ void main() {
       expect(map['counter']!.length, 3);
     });
 
-    test('異なるProviderのイベント - それぞれのキーに分かれる', () {
+    test('events for different providers - split into separate keys', () {
       store
         ..addEvent(_event('add', 'counter', 1000))
         ..addEvent(_event('add', 'greeting', 2000));
@@ -44,11 +45,13 @@ void main() {
   });
 
   group('orderedProviderIds', () {
-    test('イベントが空 - 空のリストが返る', () {
+    test('no events - returns an empty list', () {
       expect(store.orderedProviderIds, isEmpty);
     });
 
-    test('異なるタイムスタンプでaddされる - 最初のイベント順にソートされる', () {
+    test(
+        'providers added at different timestamps - sorted by first-event timestamp',
+        () {
       store
         ..addEvent(_event('add', 'greeting', 2000))
         ..addEvent(_event('add', 'counter', 1000))
@@ -59,11 +62,11 @@ void main() {
   });
 
   group('aliveProviderCount', () {
-    test('イベントが空 - 0が返る', () {
+    test('no events - returns 0', () {
       expect(store.aliveProviderCount, 0);
     });
 
-    test('addイベントのみ - 全てカウントされる', () {
+    test('add events only - all are counted', () {
       store
         ..addEvent(_event('add', 'counter', 1000))
         ..addEvent(_event('add', 'greeting', 2000));
@@ -71,7 +74,7 @@ void main() {
       expect(store.aliveProviderCount, 2);
     });
 
-    test('addの後にdisposeされる - カウントから除外される', () {
+    test('dispose after add - removed from the count', () {
       store
         ..addEvent(_event('add', 'counter', 1000))
         ..addEvent(_event('add', 'greeting', 2000))
@@ -80,7 +83,7 @@ void main() {
       expect(store.aliveProviderCount, 1);
     });
 
-    test('disposeの後に再度addされる - 再カウントされる', () {
+    test('add after dispose - counted again', () {
       store
         ..addEvent(_event('add', 'counter', 1000))
         ..addEvent(_event('dispose', 'counter', 2000))
@@ -89,7 +92,7 @@ void main() {
       expect(store.aliveProviderCount, 1);
     });
 
-    test('updateイベントがある - aliveカウントに影響しない', () {
+    test('update event - does not affect the alive count', () {
       store
         ..addEvent(_event('add', 'counter', 1000))
         ..addEvent(_event('update', 'counter', 2000));
@@ -97,7 +100,7 @@ void main() {
       expect(store.aliveProviderCount, 1);
     });
 
-    test('全てdisposeされる - 0が返る', () {
+    test('all providers disposed - returns 0', () {
       store
         ..addEvent(_event('add', 'counter', 1000))
         ..addEvent(_event('add', 'greeting', 2000))
@@ -109,12 +112,12 @@ void main() {
   });
 
   group('startTime / endTime', () {
-    test('イベントが空 - 両方0が返る', () {
+    test('no events - both return 0', () {
       expect(store.startTime, 0);
       expect(store.endTime, 0);
     });
 
-    test('複数イベントがある - startTimeは最小値、endTimeは最大値が返る', () {
+    test('multiple events - startTime is the min and endTime is the max', () {
       store
         ..addEvent(_event('add', 'a', 3000))
         ..addEvent(_event('add', 'b', 1000))
@@ -126,7 +129,7 @@ void main() {
   });
 
   group('clear', () {
-    test('alive状態のProviderがある - 合成addイベントが再挿入される', () {
+    test('alive providers exist - synthetic add events are re-emitted', () {
       store
         ..addEvent(_event('add', 'counter', 1000))
         ..addEvent(_event('add', 'greeting', 2000))
@@ -136,10 +139,10 @@ void main() {
 
       expect(store.events.length, 1);
       expect(store.events.first.providerId, 'counter');
-      expect(store.events.first.type, 'add');
+      expect(store.events.first.type, ProviderEventType.add);
     });
 
-    test('全てdisposeされている - イベントが全て削除される', () {
+    test('all providers already disposed - all events are removed', () {
       store
         ..addEvent(_event('add', 'counter', 1000))
         ..addEvent(_event('dispose', 'counter', 2000));
@@ -149,7 +152,7 @@ void main() {
       expect(store.events, isEmpty);
     });
 
-    test('clear後もaliveProviderCountが維持される', () {
+    test('aliveProviderCount preserved after clear', () {
       store
         ..addEvent(_event('add', 'counter', 1000))
         ..addEvent(_event('add', 'greeting', 2000))
@@ -162,7 +165,7 @@ void main() {
   });
 
   group('notifyListeners', () {
-    test('addEventを呼ぶ - リスナーが通知される', () {
+    test('addEvent - notifies listeners', () {
       var notified = false;
       store.addListener(() => notified = true);
 
@@ -171,7 +174,7 @@ void main() {
       expect(notified, isTrue);
     });
 
-    test('clearを呼ぶ - リスナーが通知される', () {
+    test('clear - notifies listeners', () {
       store.addEvent(_event('add', 'counter', 1000));
       var notified = false;
       store.addListener(() => notified = true);
@@ -185,7 +188,7 @@ void main() {
 
 ProviderEvent _event(String type, String providerId, int timestamp) {
   return ProviderEvent(
-    type: type,
+    type: ProviderEventType.fromWire(type),
     providerId: providerId,
     timestamp: timestamp,
   );

@@ -3,27 +3,27 @@ import 'package:riverpod_viz/riverpod_viz.dart';
 
 void main() {
   group('ProviderEventType', () {
-    test('全てのenum値が定義されている - 4つのイベントタイプが存在する', () {
+    test('values - contains four event types', () {
       expect(ProviderEventType.values.length, 4);
     });
 
-    test('add.value - "add"が返る', () {
+    test('add.value - returns "add"', () {
       expect(ProviderEventType.add.value, 'add');
     });
 
-    test('update.value - "update"が返る', () {
+    test('update.value - returns "update"', () {
       expect(ProviderEventType.update.value, 'update');
     });
 
-    test('dispose.value - "dispose"が返る', () {
+    test('dispose.value - returns "dispose"', () {
       expect(ProviderEventType.dispose.value, 'dispose');
     });
 
-    test('error.value - "error"が返る', () {
+    test('error.value - returns "error"', () {
       expect(ProviderEventType.error.value, 'error');
     });
 
-    test('各valueが一意である - 重複がない', () {
+    test('values are unique - no duplicates across enum values', () {
       final values = ProviderEventType.values.map((e) => e.value).toSet();
       expect(values.length, ProviderEventType.values.length);
     });
