@@ -14,7 +14,8 @@ A [DevTools extension](https://docs.flutter.dev/tools/devtools/extensions) that 
 
 ## Screenshot
 
-<img width=800 src="./screenshot.png">
+<img width="800" alt="screenshot" src="https://github.com/user-attachments/assets/ac13f6ca-1294-46fe-b8f3-c4ccb1ae4b83" />
+
 
 
 ## Getting Started
