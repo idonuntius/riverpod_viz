@@ -1,4 +1,4 @@
-.PHONY: pub-get analyze test test-coverage build-extension run-example clean
+.PHONY: pub-get analyze test test-coverage build-and-copy run-example clean
 
 ## Run flutter pub get on all packages
 pub-get:
@@ -23,11 +23,11 @@ test-coverage:
 	@echo "  coverage/lcov.info"
 	@echo "  devtools_extension/coverage/lcov.info"
 
-## Build devtools extension and copy to extension/devtools/build
-build-extension:
-	cd devtools_extension && flutter build web
-	rm -rf extension/devtools/build
-	cp -r devtools_extension/build/web extension/devtools/build
+## Build the devtools extension and copy the bundle into extension/devtools
+## (uses the canonical `devtools_extensions build_and_copy` command)
+build-and-copy:
+	cd devtools_extension && dart run devtools_extensions build_and_copy \
+		--source=. --dest=../extension/devtools
 
 ## Run example app
 run-example:
