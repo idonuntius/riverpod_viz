@@ -21,9 +21,9 @@ void main() {
 
     test('multiple events for the same provider - grouped under one key', () {
       store
-        ..addEvent(_event('add', 'counter', 1000))
-        ..addEvent(_event('update', 'counter', 2000))
-        ..addEvent(_event('update', 'counter', 3000));
+        ..addEvent(_event(ProviderEventType.add, 'counter', 1000))
+        ..addEvent(_event(ProviderEventType.update, 'counter', 2000))
+        ..addEvent(_event(ProviderEventType.update, 'counter', 3000));
 
       final map = store.eventsByProvider;
 
@@ -33,8 +33,8 @@ void main() {
 
     test('events for different providers - split into separate keys', () {
       store
-        ..addEvent(_event('add', 'counter', 1000))
-        ..addEvent(_event('add', 'greeting', 2000));
+        ..addEvent(_event(ProviderEventType.add, 'counter', 1000))
+        ..addEvent(_event(ProviderEventType.add, 'greeting', 2000));
 
       final map = store.eventsByProvider;
 
@@ -53,9 +53,9 @@ void main() {
         'providers added at different timestamps - sorted by first-event timestamp',
         () {
       store
-        ..addEvent(_event('add', 'greeting', 2000))
-        ..addEvent(_event('add', 'counter', 1000))
-        ..addEvent(_event('add', 'async', 3000));
+        ..addEvent(_event(ProviderEventType.add, 'greeting', 2000))
+        ..addEvent(_event(ProviderEventType.add, 'counter', 1000))
+        ..addEvent(_event(ProviderEventType.add, 'async', 3000));
 
       expect(store.orderedProviderIds, ['counter', 'greeting', 'async']);
     });
@@ -68,44 +68,44 @@ void main() {
 
     test('add events only - all are counted', () {
       store
-        ..addEvent(_event('add', 'counter', 1000))
-        ..addEvent(_event('add', 'greeting', 2000));
+        ..addEvent(_event(ProviderEventType.add, 'counter', 1000))
+        ..addEvent(_event(ProviderEventType.add, 'greeting', 2000));
 
       expect(store.aliveProviderCount, 2);
     });
 
     test('dispose after add - removed from the count', () {
       store
-        ..addEvent(_event('add', 'counter', 1000))
-        ..addEvent(_event('add', 'greeting', 2000))
-        ..addEvent(_event('dispose', 'greeting', 3000));
+        ..addEvent(_event(ProviderEventType.add, 'counter', 1000))
+        ..addEvent(_event(ProviderEventType.add, 'greeting', 2000))
+        ..addEvent(_event(ProviderEventType.dispose, 'greeting', 3000));
 
       expect(store.aliveProviderCount, 1);
     });
 
     test('add after dispose - counted again', () {
       store
-        ..addEvent(_event('add', 'counter', 1000))
-        ..addEvent(_event('dispose', 'counter', 2000))
-        ..addEvent(_event('add', 'counter', 3000));
+        ..addEvent(_event(ProviderEventType.add, 'counter', 1000))
+        ..addEvent(_event(ProviderEventType.dispose, 'counter', 2000))
+        ..addEvent(_event(ProviderEventType.add, 'counter', 3000));
 
       expect(store.aliveProviderCount, 1);
     });
 
     test('update event - does not affect the alive count', () {
       store
-        ..addEvent(_event('add', 'counter', 1000))
-        ..addEvent(_event('update', 'counter', 2000));
+        ..addEvent(_event(ProviderEventType.add, 'counter', 1000))
+        ..addEvent(_event(ProviderEventType.update, 'counter', 2000));
 
       expect(store.aliveProviderCount, 1);
     });
 
     test('all providers disposed - returns 0', () {
       store
-        ..addEvent(_event('add', 'counter', 1000))
-        ..addEvent(_event('add', 'greeting', 2000))
-        ..addEvent(_event('dispose', 'counter', 3000))
-        ..addEvent(_event('dispose', 'greeting', 4000));
+        ..addEvent(_event(ProviderEventType.add, 'counter', 1000))
+        ..addEvent(_event(ProviderEventType.add, 'greeting', 2000))
+        ..addEvent(_event(ProviderEventType.dispose, 'counter', 3000))
+        ..addEvent(_event(ProviderEventType.dispose, 'greeting', 4000));
 
       expect(store.aliveProviderCount, 0);
     });
@@ -119,9 +119,9 @@ void main() {
 
     test('multiple events - startTime is the min and endTime is the max', () {
       store
-        ..addEvent(_event('add', 'a', 3000))
-        ..addEvent(_event('add', 'b', 1000))
-        ..addEvent(_event('update', 'a', 5000));
+        ..addEvent(_event(ProviderEventType.add, 'a', 3000))
+        ..addEvent(_event(ProviderEventType.add, 'b', 1000))
+        ..addEvent(_event(ProviderEventType.update, 'a', 5000));
 
       expect(store.startTime, 1000);
       expect(store.endTime, 5000);
@@ -131,9 +131,9 @@ void main() {
   group('clear', () {
     test('alive providers exist - synthetic add events are re-emitted', () {
       store
-        ..addEvent(_event('add', 'counter', 1000))
-        ..addEvent(_event('add', 'greeting', 2000))
-        ..addEvent(_event('dispose', 'greeting', 3000));
+        ..addEvent(_event(ProviderEventType.add, 'counter', 1000))
+        ..addEvent(_event(ProviderEventType.add, 'greeting', 2000))
+        ..addEvent(_event(ProviderEventType.dispose, 'greeting', 3000));
 
       store.clear();
 
@@ -144,8 +144,8 @@ void main() {
 
     test('all providers already disposed - all events are removed', () {
       store
-        ..addEvent(_event('add', 'counter', 1000))
-        ..addEvent(_event('dispose', 'counter', 2000));
+        ..addEvent(_event(ProviderEventType.add, 'counter', 1000))
+        ..addEvent(_event(ProviderEventType.dispose, 'counter', 2000));
 
       store.clear();
 
@@ -154,9 +154,9 @@ void main() {
 
     test('aliveProviderCount preserved after clear', () {
       store
-        ..addEvent(_event('add', 'counter', 1000))
-        ..addEvent(_event('add', 'greeting', 2000))
-        ..addEvent(_event('update', 'counter', 3000));
+        ..addEvent(_event(ProviderEventType.add, 'counter', 1000))
+        ..addEvent(_event(ProviderEventType.add, 'greeting', 2000))
+        ..addEvent(_event(ProviderEventType.update, 'counter', 3000));
 
       store.clear();
 
@@ -169,13 +169,13 @@ void main() {
       var notified = false;
       store.addListener(() => notified = true);
 
-      store.addEvent(_event('add', 'counter', 1000));
+      store.addEvent(_event(ProviderEventType.add, 'counter', 1000));
 
       expect(notified, isTrue);
     });
 
     test('clear - notifies listeners', () {
-      store.addEvent(_event('add', 'counter', 1000));
+      store.addEvent(_event(ProviderEventType.add, 'counter', 1000));
       var notified = false;
       store.addListener(() => notified = true);
 
@@ -186,9 +186,9 @@ void main() {
   });
 }
 
-ProviderEvent _event(String type, String providerId, int timestamp) {
+ProviderEvent _event(ProviderEventType type, String providerId, int timestamp) {
   return ProviderEvent(
-    type: ProviderEventType.fromWire(type),
+    type: type,
     providerId: providerId,
     timestamp: timestamp,
   );
