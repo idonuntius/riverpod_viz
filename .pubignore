@@ -1,0 +1,53 @@
+# NOTE: when .pubignore exists, pub stops consulting .gitignore, so the standard
+# Flutter/Dart exclusions are duplicated here.
+
+# Build outputs and tool caches (anchor root-level build/ so we keep
+# extension/devtools/build which IS the published bundle).
+.dart_tool/
+.flutter-plugins-dependencies
+/build/
+/coverage/
+pubspec.lock
+
+# IDE / editor
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+
+# OS / misc
+.DS_Store
+.history
+.svn/
+.atom/
+.buildlog/
+*.log
+*.swp
+*.class
+*.pyc
+
+# Claude Code workspace
+.claude/
+CLAUDE.md
+
+# ---- riverpod_viz specific ----
+
+# Internal sub-package: the prebuilt bundle in extension/devtools/build is what
+# ships to pub consumers. The Flutter source under devtools_extension/ is not needed.
+devtools_extension/
+
+# Example app: keep lib/, web/, pubspec.yaml, README.md so pub.dev's Example tab works,
+# but drop the per-platform scaffolding which pub consumers don't need.
+example/android/
+example/ios/
+example/macos/
+example/linux/
+example/windows/
+
+# Debug symbol files from the Flutter web build (not needed at runtime).
+extension/devtools/build/canvaskit/*.symbols
+extension/devtools/build/canvaskit/chromium/*.symbols
+
+# Repo tooling
+Makefile
